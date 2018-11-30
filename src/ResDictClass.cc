@@ -10,11 +10,11 @@
 
 
 void ResDictClass::deser_and_add(std::string& ser_res) {
-	std::vector<std::string> toks;
+	std::deque<std::string> toks;
 	int tok_count = 0, res_value = 0;
 
 	try {
-		tok_count = tok_split(ser_res, RES_DELIM, toks);
+		tok_count = n_tok_split(ser_res, RES_DELIM, toks);
 		if (tok_count != SER_RES_TOK_COUNT) { throw ResDict_Exception(ERR_RES_TOK_COUNT, ERR_RESDICT_DESER_ADD_FUNC); }
 
 		res_value = str_to_int(toks[1]);

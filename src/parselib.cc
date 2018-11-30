@@ -37,20 +37,22 @@ int str_to_int(std::string const& str) {
 /**
  * Function: tok_split
  * -----------------------
- * Splits string "str" into tokens by the delimiter "delim", then saves all
- * tokens to the vector "toks".
- * Tokens may be separated by an arbitrary number of delimiters.
+ * Splits string "str" into tokens by the delimiter "delim", then saves first
+ * "n" tokens to "toks" container.
+ * Tokens may be separated by an arbitrary number of delimiters. If no "n" value
+ * is specified, all tokens will be saved to the "toks" list.
  *
  * Parameters:
  * 	- str: String to be split into tokens.
  *	- delim: String delimiter to split "str" by.
- *	- toks: Stores vector of string tokens taken from "str".
+ *	- toks: Stores string tokens taken from "str".
+ *	- n: Number of tokens to save. If left unspecified, all tokens will be saved.
  * Return Value:
  * 	- Number of tokens taken from "str".
  * Throws: None
  */
-int tok_split(std::string& str, char delim, std::vector<std::string>& toks) {
-	int str_len = 0, tok_start = -1, tok_len = 0;
+int n_tok_split(std::string& str, char delim, std::deque<std::string>& toks, int n = 0) {
+	int str_len = 0, tok_start = -1, tok_len = 0, tok_count = 0;
 	std::string token("");	
 	char c;
 
@@ -63,6 +65,8 @@ int tok_split(std::string& str, char delim, std::vector<std::string>& toks) {
 			tok_len = i - tok_start;
 			token = str.substr(tok_start, tok_len);
 			toks.push_back(token);
+			tok_count++;
+			if (n > 0 && tok_count == n) { return tok_count; }
 			tok_start = -1;
 		} 
 	}
@@ -71,5 +75,7 @@ int tok_split(std::string& str, char delim, std::vector<std::string>& toks) {
 		tok_len = str_len - tok_start;
 		token = str.substr(tok_start, tok_len);
 		toks.push_back(token);
+		tok_count++;
 	}
+	return tok_count;
 }	

@@ -6,11 +6,14 @@
  *
  */
  
+ #include "TaskManager.h"
+ 
  void TaskManager::add_task(Task * new_task) {
 	 std::string tname("");
 	 
 	 tname = new_task->get_name();
 	 this->task_dict[tname] = new_task
+	 this->tname_list.push_back(tname);
  }
  
  void TaskManager::poll_task_status(std::map<std::string, TaskStatus> tstat_dict) {
@@ -25,7 +28,6 @@
  
  void TaskManager::deser_and_add(const std::string& ser_task) {
 	Task * new_task = NULL;
-	std::string tname("");
 	
 	try {
 		new_task = new Task(ser_task);

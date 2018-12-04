@@ -11,8 +11,11 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "TaskClass.h"
+
+typedef std::map<std::string, TaskStatus> TStat_Dict;
 
 class TaskMngr_Exception : public TB_Exception {
 	public:
@@ -25,9 +28,10 @@ class TaskMngr_Exception : public TB_Exception {
 class TaskManager {
 	private:
 		std::map<std::string, Task *> task_dict;
+		std::vector<std::string> tname_list;
 	public:
 		void add_task(Task * new_task);
-		void poll_task_status(std::map& <std::string, TaskStatus> tstat_dict);
+		void poll_task_status(TStat_Dict tstat_dict);
 		Task * get_task(const std::string& tname);
 		void deser_and_add(const std::string& ser_task);
 }

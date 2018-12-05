@@ -35,8 +35,8 @@ class Parse_Exception : public Traceback_Exception {
 		: Traceback_Exception(msg, cur_func, error_code) {}
 };
 
-int str_to_int(std::string const& str);
-int n_tok_split(std::string& str, std::string delim, std::deque<std::string>& toks);
-
+int str_to_int(const std::string& str);
+int n_tok_split(const std::string& str, char delim, std::deque<std::string>& toks, int n=0);
+int get_first_tok(std::string& str, char delim, std::string& first_tok);
 
 #endif

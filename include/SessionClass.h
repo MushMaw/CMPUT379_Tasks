@@ -14,11 +14,22 @@
 
 #include "ResDictClass.h"
 #include "TaskClass.h"
+#include "TaskManagerClass.h"
+#include "TaskMonitorClass.h"
 #include "parselib.h"
+#include "a4constants.h"
 
 #define INPUT_FILE_DELIM_CHAR ' '
 #define INPUT_FILE_TASK_START std::string("task")
 #define INPUT_FILE_RESOURCE_START std::string("resources")
+
+#define ERR_INPUT_FILE_OPEN_FAIL "Unable to open input file\n"
+
+#define ERR_SESS_CONSTR_FUNC std::string("Session()")
+#define ERR_SESS_PARSE_IFILE_FUNC std::string("parse_input_file()")
+#define ERR_SESS_PARSE_RES_LINE_FUNC std::string("parse_resource_line()")
+#define ERR_SESS_PARSE_TASK_LINE_FUNC std::string("parse_task_line()")
+#define ERR_SESS_RUN_FUNC std::string("run()")
 
 class Sess_Exception : public TB_Exception {
 	public:

@@ -1,7 +1,19 @@
 #include "SessionClass.h"
 
 
-Session::Session(int argc, char *argv[]) {
+/**
+ * Function: Session Constructor
+ * -----------------------
+ * 
+ *
+ * Parameters: 
+ *	- argc: Argument count
+ *	- argv: Argument array
+ *	- start_time: Starting time of calling program (here, a4task)
+ * Return Value: None
+ * Throws: Sess_Exception
+ */
+Session::Session(int argc, char *argv[], HR_Clock::time_point start_time) {
 	std::string arg_str("");
 	try {
 		arg_str = argv[1];
@@ -18,54 +30,107 @@ Session::Session(int argc, char *argv[]) {
 
 }
 
+/**
+ * Function: parse_input_file
+ * -----------------------
+ * 
+ *
+ * Parameters:
+ *	- file_name: Name of input file
+ * Return Value: None
+ * Throws: Sess_Exception
+ */
 void Session::parse_input_file(const std::string& file_name) {
 	std::ifstream input_file;
-	std::string line("");
-	std::deque<std::string> line_toks;
-	int line_toks_count = 0;
+	std::string line(""), first_tok("");
 
-	input_file.open(file_name.c_str());
+	try {
+		input_file.open(file_name.c_str());
+		if (input_file.fail()) { throw Sess_Exception(ERR_INPUT_FILE_OPEN_FAIL, ERR_SESS_PARSE_IFILE_FUNC); }
 
-	while (input_file.getline(line)) {
-		if (line[0] != '\n' && line[0] != '#') {
-			line_toks_count = tok_split(line, INPUT_FILE_DELIM_CHAR, line_toks, 1);
-			if (line_toks[0] == INPUT_FILE_TASK_START) {
-				this->parse_resource_line(line);
-			} else if (line_toks[0] == INPUT_FILE_RESOURCE_START) {
-				this->parse_task_line(line);
+		while (input_file.getline(line)) {
+			// If file is non-empty and not a comment
+			if (line[0] != '\n' && line[0] != '#') {
+				// Get first token from line to determine its type
+				get_first_tok(line, INPUT_FILE_DELIM_CHAR, first_tok);
+				if (first_tok == INPUT_FILE_TASK_START) {
+					this->parse_resource_line(line);
+				} else if (first_tok == INPUT_FILE_RESOURCE_START) {
+					this->parse_task_line(line);
+				}
 			}
 		}
-	}
 
-	input_file.close();
+		input_file.close();
+	} catch (Sess_Exception& e) { throw Sess_Exception(e.what(), ERR_SESS_PARSE_IFILE_FUNC, e.get_traceback()); }
 }
 
+/**
+ * Function: parse_resource_line
+ * -----------------------
+ * 
+ *
+ * Parameters: 
+ *	- res_line: String of format "name1:value1 name2:value2 ..."
+ * Return Value: None
+ * Throws: Sess_Exception
+ */
 void Session::parse_resource_line(const std::string& res_line) {
+	std::deque<std::string> res_toks;
 	int res_count;
 	
-	res_count = res_str_list.size();
-	for (int i = 0; i < res_count; i++) {
-		this->res_dict->deser_and_add(res_str_list[i]);
-	}
+	try {
+		res_count = n_tok_split(res_line, INPUT_FILE_DELIM_CHAR, res_toks);
+		for (int i = 0; i < res_count; i++) {
+			this->res_dict->deser_and_add(res_toks[i]);
+		}
+	} catch (ResDict_Exception& e) { throw Sess_Exception(e.what(), ERR_SESS_PARSE_RES_LINE_FUNC, e.get_traceback()); }
 }
 
+/**
+ * Function: parse_task_line
+ * -----------------------
+ * 
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
 void Session::parse_task_line(const std::string& task_line) {
 	Task new_task = NULL;
-	std::deque<std::string> line_toks;
-	int tok_count;
 	try {
-		tok_count = n_tok_split(task_line, INPUT_FILE_DELIM_CHAR, line_toks);
-		line_toks.pop_front();
-		new_task = new Task(
+		new_task = new Task(task_line);
+		new_task->set_start_time(this->start_time);
+	} catch (Task_Exception& e) { throw Task_Exception(e.what(), ERR_SESS_PARSE_TASK_LINE_FUNC, e.get_traceback()); }
 }
 
+/**
+ * Function: run
+ * -----------------------
+ * 
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: Sess_Exception
+ */
 void Session::run() {
-	this->task_mngr->run_all();
-	this->print();
+	try {
+		this->task_mngr->run_all();
+		this->print_results();
+	} catch (Sess_Exception& e) { throw Sess_Exception(e.what(), ERR_SESS_RUN_FUNC, e.get_traceback()); }
 }
 
-void Session::print() {
+/**
+ * Function: print
+ * -----------------------
+ * Prints the session resource values (number available and held)
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
+void Session::print_results() {
 	this->res_dict->print();
-	this->task_mngr->print();
+	this->task_mngr->print_all();
 }
 	

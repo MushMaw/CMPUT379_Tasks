@@ -6,29 +6,56 @@
  *
  */
  
- #include "TaskMonitorClass.h"
+#include "TaskMonitorClass.h"
  
 
- void TaskMonitor::TaskMonitor(TaskManager * task_mngr) : task_mngr(task_mgnr) {
-	 this->tname_list = task_mngr->tname_list;
- }
- 
- void TaskMonitor::poll_task_status() {
-	 this->task_mngr->poll_task_status(this->tstat_dict);
- }
- 
- void TaskMonitor::print() {
-	 int task_num = this->tname_list.size();
-	 TaskStatus tstat;
-	 std::string wait_line = TMONITOR_PRINT_WAIT_START;
-	 std::string run_line = TMONITOR_PRINT_RUN_START;
-	 std::string idle_line = TMONITOR_PRINT_IDLE_START;
-	 std::string tname("");
-	 
-	 for (int i = 0; i < task_num; i++) {
-		 tname = this->tname_list[i];
-		 tstat = this->tstat_dict[tname];
-		 switch(tstat) {
+/**
+ * Function: TaskMonitorConstructor
+ * -----------------------
+ * 
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
+void TaskMonitor::TaskMonitor(TaskManager * task_mngr) : task_mngr(task_mgnr) {
+	this->tname_list = task_mngr->tname_list;
+}
+
+/**
+ * Function: poll_task_status
+ * -----------------------
+ * 
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
+void TaskMonitor::poll_task_status() {
+	this->task_mngr->poll_task_status(this->tstat_dict);
+}
+
+/**
+ * Function: print
+ * -----------------------
+ * 
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
+void TaskMonitor::print() {
+	int task_num = this->tname_list.size();
+	TaskStatus tstat;
+	std::string wait_line = TMONITOR_PRINT_WAIT_START;
+	std::string run_line = TMONITOR_PRINT_RUN_START;
+	std::string idle_line = TMONITOR_PRINT_IDLE_START;
+	std::string tname("");
+	
+	for (int i = 0; i < task_num; i++) {
+		tname = this->tname_list[i];
+		tstat = this->tstat_dict[tname];
+		switch(tstat) {
 			case TS_WAIT:
 				wait_line += tname + TMONITOR_PRINT_DELIM;
 				break; 
@@ -38,16 +65,43 @@
 			case TS_IDLE:
 				idle_line += tname + TMONITOR_PRINT_DELIM;
 				break;
-		 }
-	 }
+		}
+	}
 	 
-	 std::cout << TMONITOR_PRINT_START;
-	 std::cout << TMONITOR_PRINT_WSPACE << wait_line << '\n';
-	 std::cout << TMONITOR_PRINT_WSPACE << run_line << '\n';
-	 std::cout << TMONITOR_PRINT_WSPACE << idle_line << '\n';
- }
- 
- void TaskMonitor::run() {
-	 // TODO: Wait for n milliseconds, then poll and print
-	 return;
- }
+	std::cout << TMONITOR_PRINT_START;
+	std::cout << TMONITOR_PRINT_WSPACE << wait_line << '\n';
+	std::cout << TMONITOR_PRINT_WSPACE << run_line << '\n';
+	std::cout << TMONITOR_PRINT_WSPACE << idle_line << '\n';
+}
+
+/**
+ * Function: run
+ * -----------------------
+ * 
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
+void * TaskMonitor::run() {
+	do {
+		usleep(this->mtime);
+		poll_task_status();
+		print();
+	while (this->task_mngr->all_tasks_done());
+	return NULL;
+}
+
+/**
+ * Function: start_monitor_thread
+ * -----------------------
+ * 
+ *
+ * Parameters: 
+ *	context: Pointer to TaskMonitor object
+ * Return Value: None
+ * Throws: None
+ */
+static void TaskMonitor::start_monitor_thread(void *context) {
+	return ((TaskMonitor *)context)->run();
+}

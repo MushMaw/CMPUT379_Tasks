@@ -35,7 +35,7 @@ int str_to_int(std::string const& str) {
 }
 
 /**
- * Function: tok_split
+ * Function: n_tok_split
  * -----------------------
  * Splits string "str" into tokens by the delimiter "delim", then saves first
  * "n" tokens to "toks" container.
@@ -51,7 +51,7 @@ int str_to_int(std::string const& str) {
  * 	- Number of tokens taken from "str".
  * Throws: None
  */
-int n_tok_split(std::string& str, char delim, std::deque<std::string>& toks, int n = 0) {
+int n_tok_split(const std::string& str, char delim, std::deque<std::string>& toks, int n = 0) {
 	int str_len = 0, tok_start = -1, tok_len = 0, tok_count = 0;
 	std::string token("");	
 	char c;
@@ -79,3 +79,32 @@ int n_tok_split(std::string& str, char delim, std::deque<std::string>& toks, int
 	}
 	return tok_count;
 }	
+
+/**
+ * Function: split_first_tok
+ * -----------------------
+ * 
+ *
+ * Parameters: 
+ *	- str: The string to be split after its first token
+ *	- delim: String delimiter to split "str" by
+ *	- first_tok: The first token extracted from "str".
+ * Return Value: None
+ * Throws: None
+ */
+int get_first_tok(std::string& str, char delim, std::string& first_tok) {
+	int tok_start = -1, tok_len = 0;
+
+	for (int i = 0; i < str.length(); i++) {
+		c = str[i];
+		if (c != delim && tok_start < 1) {
+			tok_start = i;
+		} else if (c == delim && tok_start >= 0) {
+			tok_len = i - tok_start;
+			first_tok = str.substr(tok_start, tok_len);
+			str = str.substr(i, str.length() - i);
+			return tok_len;
+		}
+	}
+	return 0;
+}

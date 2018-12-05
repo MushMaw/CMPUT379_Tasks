@@ -6,35 +6,66 @@
  *
  */
  
- #include "TaskManager.h"
+#include "TaskManager.h"
  
- void TaskManager::add_task(Task * new_task) {
-	 std::string tname("");
-	 
-	 tname = new_task->get_name();
-	 this->task_dict[tname] = new_task
-	 this->tname_list.push_back(tname);
- }
- 
- void TaskManager::poll_task_status(std::map<std::string, TaskStatus> tstat_dict) {
+/**
+ * Function: add_task
+ * -----------------------
+ * 
+ *
+ * Parameters: 
+ *	- new_task: Pointer to Task to be added
+ * Return Value: None
+ * Throws: TaskMngrException
+ */
+void TaskManager::add_task(Task * new_task) {
+	std::string tname("");
+	
+	if (tcount >= NTASKS) { throw TaskMngr_Exception(ERR_TASK_MNGR_LIMIT_REACHED, ERR_TASK_MNGR_CONSTR_FUNC); }
+	tname = new_task->get_name();
+	this->task_dict[tname] = new_task
+	this->tname_list.push_back(tname);
+}
+
+/**
+ * Function: poll_task_status
+ * -----------------------
+ * 
+ *
+ * Parameters: 
+ *	- tstat_dict: Stores status values for all Tasks held by this manager
+ * Return Value: None
+ * Throws: None
+ */
+void TaskManager::poll_task_status(TStat_Dict tstat_dict) {
 	for (auto const& [tname, task] : this->task_dict) {
 		tstat_dict[tname] = task->get_status();
 	}
- }
- 
- Task * TaskManager::get_task(const std::string& tname) {
-	return this->task_dict[tname];
- }
- 
- void TaskManager::deser_and_add(const std::string& ser_task) {
-	Task * new_task = NULL;
-	
-	try {
-		new_task = new Task(ser_task);
-		this->add_task(new_task);
-	} catch (Task_Exception& e) { throw TaskMngr_Exception(e.what(), ERR_TASK_MNGR_DESER_ADD_FUNC, e.get_traceback()); }
- }
+}
 
+/**
+ * Function: get_task
+ * -----------------------
+ * 
+ *
+ * Parameters: 
+ *	tname: Name of Task
+ * Return Value: Pointer to Task with name "tname"
+ * Throws: none
+ */
+Task * TaskManager::get_task(const std::string& tname) {
+	return this->task_dict[tname];
+}
+
+/**
+ * Function: run_all
+ * -----------------------
+ * 
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
 void TaskManager::run_all() {
 	pthread_t pt_id;
 	std::string tname("");
@@ -54,11 +85,42 @@ void TaskManager::run_all() {
 	}
 }
 
-void TaskManager::print() {
+/**
+ * Function: print
+ * -----------------------
+ * 
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
+void TaskManager::print_all() {
 	int tcount = this->tname_list.size();
 	
 	for (int i = 0; i < tcount; i++) {
 		fprintf(stdout, TSK_MNGR_PRINT_IDX, i);
 		this->task_dict[tname]->print();
 	}
+}
+
+/**
+ * Function: all_tasks_done
+ * -----------------------
+ * 
+ *
+ * Parameters: None
+ * Return Value: True if all Tasks have completed their n iterations, false otherwise
+ * Throws: None
+ */
+bool TaskManager::all_tasks_done() {
+	std::string tname("");
+	int task_count = this->tname_list.size();
+	Task * task = NULL;
+
+	for (int i = 0; i < task_count; i++) {
+		task = this->task_dict[tname];
+		if (task->current_iter != task->n_iter) { return false; }
+	}
+
+	return true;
 }

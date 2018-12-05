@@ -17,6 +17,10 @@
 
 #define TSK_MNGR_PRINT_IDX "[%d] "
 
+#define ERR_TASK_MNGR_LIMIT_REACHED "Cannot add Task: Maximum number of Tasks reached\n"
+
+#define ERR_TASK_MNGR_CONSTR_FUNC std::string("TaskManager()")
+
 typedef std::map<std::string, TaskStatus> TStat_Dict;
 
 class TaskMngr_Exception : public TB_Exception {
@@ -29,12 +33,17 @@ class TaskMngr_Exception : public TB_Exception {
 
 class TaskManager {
 	private:
+		int tcount;
 		std::map<std::string, Task *> task_dict;
 		std::vector<std::string> tname_list;
 		std::vector<pthread_t> task_tid_list;
 	public:
+		TaskManager() { this->tcount = 0; }		
+
 		void add_task(Task * new_task);
 		void poll_task_status(TStat_Dict tstat_dict);
 		Task * get_task(const std::string& tname);
-		void deser_and_add(const std::string& ser_task);
+		void run_all();
+		void print_all();
+		bool all_tasks_done();
 }

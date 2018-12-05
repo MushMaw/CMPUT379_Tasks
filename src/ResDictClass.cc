@@ -1,6 +1,6 @@
 /**
  * CMPUT 379 - Assignment 4
- * File Name: ResourceClass.cc
+ * File Name: ResDictClass.cc
  * Student Name: Jacob Bakker
  *
  *
@@ -9,6 +9,17 @@
 #include "ResDictClass.h"
 
 
+/**
+ * Function: deserialize (ResDict)
+ * -----------------------
+ * 
+ *
+ * Parameters: 
+ *	- ser_res: Resource string with format "name:value"
+ *	- res_name: Stores Resource name taken from "ser_res"
+ * Return Value: Resource value extracted from "ser_res"
+ * Throws: ResDict_Exception
+ */
 int ResDictClass::deserialize(const std::string& ser_res, std::string& res_name) {
 	std::deque<std::string> toks;
 	int tok_count = 0, res_value = 0;
@@ -19,6 +30,7 @@ int ResDictClass::deserialize(const std::string& ser_res, std::string& res_name)
 
 		res_name = toks[0];
 		res_value = str_to_int(toks[1]);
+		return res_value
 	} catch { (Parse_Exception& e) { throw ResDict_Exception(e.what(), ERR_RESDICT_DESER_ADD_FUNC, e.get_traceback()); }
 }
 
@@ -26,6 +38,17 @@ int ResDictClass::deserialize(const std::string& ser_res, std::string& res_name)
  * Session Resource Dictionary class methods
  */
 
+
+/**
+ * Function: deser_and_add (SessResDict)
+ * -----------------------
+ * 
+ *
+ * Parameters: 
+ *	- ser_res: Resource string with format "name:value"
+ * Return Value: None
+ * Throws: ResDict_Exception
+ */
 void SessResDict::deser_and_add(const std::string& ser_res) {
 	int res_value;
 	std::string res_name("");
@@ -39,7 +62,18 @@ void SessResDict::deser_and_add(const std::string& ser_res) {
 	} catch (ResDict_Exception &e) { throw ResDict_Exception(e.what(), ERR_SESS_RESDICT_DESER_ADD_FUNC, e.get_traceback()); }
 }
 
-void SessResDict::acquire_res(TaskResDict* request_res) {
+
+/**
+ * Function: acquire_res (SessResDict)
+ * -----------------------
+ * 
+ *
+ * Parameters: 
+ *	- request_res: Dictionary of requested resource names and values
+ * Return Value: True if Resources were available and given, false otherwise.
+ * Throws: None
+ */
+bool SessResDict::acquire_res(TaskResDict* request_res) {
 	int avail_res, need_res;
 
 	if (this->is_res_avail(request_res) == false) { return false; }
@@ -50,6 +84,17 @@ void SessResDict::acquire_res(TaskResDict* request_res) {
 	}
 }
 
+
+/**
+ * Function: if_res_avail (SessResDict)
+ * -----------------------
+ * 
+ *
+ * Parameters: 
+ *	- request_res: Dictionary of requested resource names and values
+ * Return Value: True if available, false otherwise
+ * Throws: None
+ */
 bool SessResDict::if_res_avail(const TaskResDict* request_res) {
 	int avail_res, need_res;
 
@@ -61,6 +106,16 @@ bool SessResDict::if_res_avail(const TaskResDict* request_res) {
 	return true;
 }
 
+
+/**
+ * Function: release_res (SessResDict)
+ * -----------------------
+ * 
+ *
+ * Parameters: Dictionary of acquired Resource names and values
+ * Return Value: None
+ * Throws: None
+ */
 void SessResDict::release_res(TaskResDict* acquire_res) {
 	int acq_res;
 
@@ -73,6 +128,17 @@ void SessResDict::release_res(TaskResDict* acquire_res) {
 	return;
 }
 
+
+/**
+ * Function:print
+ * -----------------------
+ * Prints each resource name, number of available units, and the amount
+ * of that resource currently held by some set of Tasks.
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
 void SessResDict::print() {
 	int max_avail, avail_res, held_res, rcount = this->rname_list.size();
 	std::string rname("");
@@ -89,6 +155,17 @@ void SessResDict::print() {
  * Task Resource Dictionary class methods
  */
 
+
+/**
+ * Function: deser_and_add (TaskResDict)
+ * -----------------------
+ * 
+ *
+ * Parameters: 
+ *	ser_res: Resource string with format "name:value"
+ * Return Value: None
+ * Throws: ResDict_Exception
+ */
 void TaskResDict::deser_and_add(std::string& ser_res) {
 	int res_value;
 	std::string res_name("");
@@ -102,14 +179,44 @@ void TaskResDict::deser_and_add(std::string& ser_res) {
 	} catch (ResDict_Exception& e) { throw ResDict_Exception(e.what(), ERR_TASK_RESDICT_DESER_ADD_FUNC, e.get_traceback()); }
 }
 
+
+/**
+ * Function: acquire_res (TaskResDict)
+ * -----------------------
+ * 
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
 bool TaskResDict::acquire_res() {
 	return this->sess_res->acquire_res(this);
 }
 
+
+/**
+ * Function: release_res (TaskResDict)
+ * -----------------------
+ * 
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
 void TaskResDict::release_res() {
 	this->sess_res->release_res(this);
 }
 
+
+/**
+ * Function: print (TaskResDict)
+ * -----------------------
+ * 
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
 void TaskResDict::print() {
 	int rcount = this->rname_list.size(), int held_res_val = 0;
 	std::string rname("");	

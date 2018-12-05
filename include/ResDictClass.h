@@ -1,6 +1,6 @@
 /**
  * CMPUT 379 - Assignment 4
- * File Name: ResourceClass.h
+ * File Name: ResDictClass.h
  * Student Name: Jacob Bakker
  *
  *

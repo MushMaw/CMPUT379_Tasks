@@ -15,6 +15,8 @@
 
 #include "TaskClass.h"
 
+#define TSK_MNGR_PRINT_IDX "[%d] "
+
 typedef std::map<std::string, TaskStatus> TStat_Dict;
 
 class TaskMngr_Exception : public TB_Exception {
@@ -29,6 +31,7 @@ class TaskManager {
 	private:
 		std::map<std::string, Task *> task_dict;
 		std::vector<std::string> tname_list;
+		std::vector<pthread_t> task_tid_list;
 	public:
 		void add_task(Task * new_task);
 		void poll_task_status(TStat_Dict tstat_dict);

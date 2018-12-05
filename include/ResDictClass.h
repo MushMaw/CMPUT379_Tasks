@@ -14,11 +14,20 @@
 #define SER_RES_TOK_COUNT 2
 #define SER_RES_DELIM ':'
 
+#define TASK_RESDICT_PRINT_RES "\t%s: (needed= %d, held= %d)\n"
+#define SESS_RESDICT_PRINT_RES "\n%s: (maxAvail= %d, held=%d)\n"
+
 // Error messages
 #define ERR_RES_TOK_COUNT "Invalid string for serialized Resource\n"
 
 // Function names
 #define ERR_RESDICT_DESER_ADD_FUNC std::string("ResDict::deserialize()")
+
+typedef struct ResDictVal {
+	int avail_res;
+	int need_res;
+	int held_res;
+} ResDictVal;
 
 class ResDict_Exception : public TB_Exception {
 	public:
@@ -30,10 +39,12 @@ class ResDict_Exception : public TB_Exception {
 
 class ResDict {
 	private:
-		std::map<std::string, int> rdict;
+		std::map<std::string, ResDictVal> rdict;
+		std::vector<std::string> rname_list;
 	public:
-		void deser_and_add(std::string& ser_res);
-		void set_res(std::string& res_name, int value);
+		int deserialize(const std::string& ser_res, std::string& res_name);
+		virtual void deser_and_add(const std::string& ser_res);
+		virtual void set_res(const std::string& res_name, int value);
 
 		virtual void print();
 }
@@ -43,6 +54,9 @@ class SessResDict : public ResDict {
 		std::mutex res_mutex;
 
 	public:
+		void deser_and_add(const std::string& ser_res) override;
+		void set_res(const std::string& res_name, int value) override;
+
 		bool acquire_res(const TaskResDict* request_res);
 		void release_res(const TaskResDict* acquire_res);
 
@@ -52,8 +66,10 @@ class SessResDict : public ResDict {
 class TaskResDict : public ResDict {
 	private:
 		SessResDict * sess_res;
-		bool has_acq_res;
 	public:	
+		void deser_and_add(const std::string& ser_res) override;
+		void set_res(const std::string& res_name, int value) override;	
+
 		void acquire_res();
 		void release_res();
 

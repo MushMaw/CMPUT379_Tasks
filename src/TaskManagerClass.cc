@@ -34,3 +34,31 @@
 		this->add_task(new_task);
 	} catch (Task_Exception& e) { throw TaskMngr_Exception(e.what(), ERR_TASK_MNGR_DESER_ADD_FUNC, e.get_traceback()); }
  }
+
+void TaskManager::run_all() {
+	pthread_t pt_id;
+	std::string tname("");
+	Task * next_task = NULL;
+	int tcount = this->tname_list.size();
+
+	// For each task, create a thread and run the task on it
+	for (int i = 0; i < tcount; i++) {
+		pthread_create(&pt_id, NULL, &Task::run_task_thread, next_task);
+		this->task_tid_list.push_back(pt_id);
+	}
+
+	// Wait until all task threads have terminated
+	for (int i = 0; i < tcount; i++) {
+		pt_id = this->task_tid_list[i];
+		pthread_join(pt_id, NULL);
+	}
+}
+
+void TaskManager::print() {
+	int tcount = this->tname_list.size();
+	
+	for (int i = 0; i < tcount; i++) {
+		fprintf(stdout, TSK_MNGR_PRINT_IDX, i);
+		this->task_dict[tname]->print();
+	}
+}

@@ -55,14 +55,19 @@ class Sess_Exception : public TB_Exception {
 class Session {
 	private:
 		int n_iter, mon_time;
+		pthread_t mon_tid;
 		std::string file_name;
 		SessResDict * res_dict;
 		TaskManager * task_mngr;
+		TaskMonitor * monitor;
 		//HR_Clock::time_point start_time;
 	
 		void parse_input_file();
 		void parse_task_line(const std::string& task_line);
 		void parse_resource_line(const std::string& res_line);
+
+		void start_monitor();
+		void wait_for_monitor();
 	public:
 		Session(int argc, char *argv[]); // HR_Clock::time_point start_time);
 		~Session();

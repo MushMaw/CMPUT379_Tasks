@@ -30,10 +30,10 @@ class TaskMonitor {
 	private:
 		TaskManager * task_mngr;
 		TStat_Dict tstat_dict;
-		std::vector<std::string> tname_list;
 		int mtime;
 	public:
-		TaskMonitor(TaskManager * task_mgnr);
+		TaskMonitor(TaskManager * task_mgnr, int mtime);
+		~TaskMonitor() {};
 	
 		void poll_task_status();
 		void print();

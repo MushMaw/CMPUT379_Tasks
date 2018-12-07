@@ -18,9 +18,9 @@
  * Return Value: None
  * Throws: None
  */
-TaskMonitor::TaskMonitor(TaskManager * task_mngr) {
-	this->tname_list = task_mngr->get_tname_list();
+TaskMonitor::TaskMonitor(TaskManager * task_mngr, int mtime) {
 	this->task_mngr = task_mngr;
+	this->mtime = mtime;
 }
 
 /**
@@ -46,16 +46,16 @@ void TaskMonitor::poll_task_status() {
  * Throws: None
  */
 void TaskMonitor::print() {
-	int task_num = this->tname_list.size();
+	TStat_Dict::iterator it;
 	TaskStatus tstat;
 	std::string wait_line = TMONITOR_PRINT_WAIT_START;
 	std::string run_line = TMONITOR_PRINT_RUN_START;
 	std::string idle_line = TMONITOR_PRINT_IDLE_START;
 	std::string tname("");
 	
-	for (int i = 0; i < task_num; i++) {
-		tname = this->tname_list[i];
-		tstat = this->tstat_dict[tname];
+	for (it = this->tstat_dict.begin(); it != this->tstat_dict.end(); it++) {
+		tname = it->first;
+		tstat = it->second;
 		switch(tstat) {
 			case TS_WAIT:
 				wait_line += tname + TMONITOR_PRINT_DELIM;
@@ -70,7 +70,7 @@ void TaskMonitor::print() {
 	}
 	 
 	std::cout << TMONITOR_PRINT_START;
-	std::cout << TMONITOR_PRINT_WSPACE << wait_line << '\n';
+	std::cout << wait_line << '\n';
 	std::cout << TMONITOR_PRINT_WSPACE << run_line << '\n';
 	std::cout << TMONITOR_PRINT_WSPACE << idle_line << '\n';
 }
@@ -86,10 +86,10 @@ void TaskMonitor::print() {
  */
 void * TaskMonitor::run() {
 	do {
-		usleep(this->mtime);
+		usleep(this->mtime * 1000);
 		poll_task_status();
 		print();
-	} while (this->task_mngr->all_tasks_done());
+	} while (this->task_mngr->all_tasks_done() == false);
 	return NULL;
 }
 

@@ -4,6 +4,13 @@
 pthread_mutex_t thread_create_lock;
 pthread_mutex_t sess_res_lock;
 
+// Mutexes for monitor thread and changing task status
+pthread_mutex_t task_status_lock;
+pthread_mutex_t tstat_try_lock;
+pthread_mutex_t monitor_print_lock;
+// Track number of task threads currently trying to change status
+int change_stat_count;
+
 /**
  * Function: Session Constructor
  * -----------------------
@@ -30,15 +37,22 @@ Session::Session(int argc, char *argv[]) { // HR_Clock::time_point start_time) {
 		
 		this->res_dict = new SessResDict();
 		this->task_mngr = new TaskManager();
+		this->monitor = new TaskMonitor(this->task_mngr, this->mon_time);
 
 		mutex_init(&thread_create_lock);
 		mutex_init(&sess_res_lock);
+
+		mutex_init(&task_status_lock);
+		mutex_init(&tstat_try_lock);
+		mutex_init(&monitor_print_lock);
+		change_stat_count = 0;
 	} catch (Parse_Exception& e) { throw Sess_Exception(e.what(), ERR_SESS_CONSTR_FUNC, e.get_traceback()); }
 }
 
 Session::~Session() {
 	delete this->res_dict;
 	delete this->task_mngr;
+	delete this->monitor;
 }
 
 /**
@@ -125,6 +139,16 @@ void Session::parse_task_line(const std::string& task_line) {
 	} catch (Task_Exception& e) { throw Sess_Exception(e.what(), ERR_SESS_PARSE_TASK_LINE_FUNC, e.get_traceback()); }
 }
 
+void Session::start_monitor() {
+	mutex_lock(&thread_create_lock);
+	pthread_create(&this->mon_tid, NULL, &TaskMonitor::start_monitor_thread, this->monitor);
+	mutex_unlock(&thread_create_lock);
+}
+
+void Session::wait_for_monitor() {
+	pthread_join(this->mon_tid, NULL);
+}
+
 /**
  * Function: run
  * -----------------------
@@ -137,7 +161,9 @@ void Session::parse_task_line(const std::string& task_line) {
 void Session::run() {	
 	try {
 		this->parse_input_file();
+		this->start_monitor();
 		this->task_mngr->run_all();
+		this->wait_for_monitor();
 		this->print_results();
 	} catch (Sess_Exception& e) { throw Sess_Exception(e.what(), ERR_SESS_RUN_FUNC, e.get_traceback()); }
 }

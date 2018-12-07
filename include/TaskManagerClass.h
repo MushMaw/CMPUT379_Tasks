@@ -52,7 +52,7 @@ class TaskManager {
 		std::vector<std::string> get_tname_list() { return this->tname_list; }		
 
 		void add_task(Task * new_task);
-		void poll_task_status(TStat_Dict tstat_dict);
+		void poll_task_status(TStat_Dict& tstat_dict);
 		Task * get_task(const std::string& tname);
 		void run_all();
 		void print_all();

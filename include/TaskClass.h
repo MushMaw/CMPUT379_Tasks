@@ -25,7 +25,11 @@
 
 #define SER_TASK_DELIM ' '
 
-#define TASK_PRINT_HEADER "\t(%s, runTime= %d msec, idleTime= %d msec):\n"
+#define TS_WAIT_STR std::string("WAIT")
+#define TS_RUN_STR std::string("RUN")
+#define TS_IDLE_STR std::string("IDLE")
+
+#define TASK_PRINT_HEADER "\t%s (%s, runTime= %d msec, idleTime= %d msec):\n"
 #define TASK_PRINT_TID "\t(tid= %d)\n"
 #define TASK_PRINT_RUN_WAIT_COUNTS "\t(RUN: %d times, WAIT: %d msec)\n"
 #define TASK_FINISH_ITER_MSG "task: %s (tid= %d, iter= %d, time= %d msec)\n"
@@ -73,6 +77,7 @@ class Task {
 		static void * run_task_thread(void *context);
 		void wait(int time);
 		void * run();
+		void change_status(TaskStatus st);
 		bool is_done();
 
 		void print_finish_iter();

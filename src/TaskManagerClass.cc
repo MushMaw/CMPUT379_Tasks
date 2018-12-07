@@ -52,12 +52,12 @@ void TaskManager::add_task(Task * new_task) {
  * Return Value: None
  * Throws: None
  */
-void TaskManager::poll_task_status(TStat_Dict tstat_dict) {
-	TStat_Dict::iterator it;
+void TaskManager::poll_task_status(TStat_Dict& tstat_dict) {
+	std::map<std::string, Task *>::iterator it;
 	std::string tname("");
 	Task * task = NULL;
 
-	for (it = tstat_dict.begin(); it != tstat_dict.end(); it++) {
+	for (it = this->task_dict.begin(); it != this->task_dict.end(); it++) {
 		tname = it->first;
 		task = this->task_dict[tname];
 		tstat_dict[tname] = task->get_status();
@@ -142,11 +142,11 @@ void TaskManager::print_all() {
  */
 bool TaskManager::all_tasks_done() {
 	std::string tname("");
-	int task_count = this->tname_list.size();
+	std::map<std::string, Task *>::iterator it;
 	Task * task = NULL;
 
-	for (int i = 0; i < task_count; i++) {
-		task = this->task_dict[tname];
+	for (it = this->task_dict.begin(); it != this->task_dict.end(); it++) {
+		task = it->second;
 		if (task->is_done() == false) { return false; }
 	}
 

@@ -24,6 +24,7 @@ Task::Task(const std::string& ser_task, int n_iter, SessResDict * sess_rdict) {
 		this->n_iter = n_iter;
 		this->req_res = new TaskResDict(sess_rdict);
 		this->deserialize(ser_task);
+		this->status = TS_IDLE;
 	} catch (Task_Exception& e) { throw Task_Exception(e.what(), ERR_TASK_CONSTR_FUNC, e.get_traceback()); }
 }
 
@@ -164,7 +165,16 @@ void Task::release_res() {
  * Throws: None
  */
 void Task::print() {
-	fprintf(stdout, TASK_PRINT_HEADER, this->name.c_str(), this->busy_time, this->idle_time);
+	std::string stat_str("");
+	switch (this->status) {
+		case TS_RUN:
+			stat_str = TS_RUN_STR; break;
+		case TS_WAIT:
+			stat_str = TS_WAIT_STR; break;
+		case TS_IDLE:
+			stat_str = TS_IDLE_STR; break;
+	}
+	fprintf(stdout, TASK_PRINT_HEADER, this->name.c_str(), stat_str.c_str(), this->busy_time, this->idle_time);
 	fprintf(stdout, TASK_PRINT_TID, int (this->tid));
 	this->req_res->print();
 	fprintf(stdout, TASK_PRINT_RUN_WAIT_COUNTS, this->current_iter, this->wait_time);
@@ -181,8 +191,13 @@ void Task::print() {
  * Throws: None
  */
 bool Task::is_done() {
+	if (this == NULL) { std::cout << "NULL TASK\n"; }
 	if (this->n_iter == this->current_iter) { return true; }
 	else { return false; }
+}
+
+void Task::change_status(TaskStatus st) {
+	this->status = st;
 }
 
 /**
@@ -200,10 +215,14 @@ void * Task::run() {
 	this->tid = pthread_self();
 	this->current_iter = 0;
 	while (this->current_iter < this->n_iter) {
+		this->change_status(TS_WAIT);
 		this->acquire_res();
 
+		this->change_status(TS_RUN);
 		this->wait(this->busy_time);
 		this->release_res();
+
+		this->change_status(TS_IDLE);
 		this->wait(this->idle_time);
 
 		this->print_finish_iter();

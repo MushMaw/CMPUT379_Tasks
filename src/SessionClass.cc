@@ -5,7 +5,7 @@ pthread_mutex_t thread_create_lock;
 pthread_mutex_t sess_res_lock;
 
 // Mutexes for monitor thread and changing task status
-pthread_mutex_t task_status_lock;
+pthread_mutex_t change_status_count_lock;
 pthread_mutex_t tstat_try_lock;
 pthread_mutex_t monitor_print_lock;
 // Track number of task threads currently trying to change status
@@ -45,7 +45,7 @@ Session::Session(int argc, char *argv[]) {
 		mutex_init(&thread_create_lock);
 		mutex_init(&sess_res_lock);
 
-		mutex_init(&task_status_lock);
+		mutex_init(&change_status_count_lock);
 		mutex_init(&tstat_try_lock);
 		mutex_init(&monitor_print_lock);
 		change_stat_count = 0;

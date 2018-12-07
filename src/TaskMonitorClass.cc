@@ -88,7 +88,12 @@ void * TaskMonitor::run() {
 	do {
 		usleep(this->mtime * 1000);
 		poll_task_status();
-		print();
+
+		mutex_lock(&tstat_try_lock); // Lock tasks from changing status
+		mutex_lock(&monitor_print_lock); // Wait until all tasks currently changing status are done
+		print(); // Print task statuses while they are unable to change them
+		mutex_unlock(&monitor_print_lock); // Allow tasks to change status again
+		mutex_unlock(&tstat_try_lock);
 	} while (this->task_mngr->all_tasks_done() == false);
 	return NULL;
 }

@@ -200,7 +200,23 @@ bool Task::is_done() {
 }
 
 void Task::change_status(TaskStatus st) {
+	mutex_lock(&tstat_try_lock); // Indicate task trying to change status
+	mutex_lock(&change_status_count_lock); // Lock entry to number of tasks changing status
+
+	change_stat_count++;
+	// If this is the only task currently changing status, lock the monitor from printing
+	if (change_stat_count == 1) { mutex_lock(&monitor_print_lock); }
+
+	mutex_unlock(&change_status_count_lock); // Release locks for other tasks
+	mutex_unlock(&tstat_try_lock);
+
 	this->status = st;
+
+	mutex_lock(&change_status_count_lock); // Lock entry to number of tasks changing status
+	change_stat_count--;
+	// If this is the last task currently changing status, unlock the monitor for printing
+	if (change_stat_count == 0) { mutex_unlock(&monitor_print_lock); }
+	mutex_unlock(&change_status_count_lock);
 }
 
 /**

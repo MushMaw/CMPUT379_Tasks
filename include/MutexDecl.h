@@ -7,7 +7,7 @@
 extern pthread_mutex_t thread_create_lock;
 extern pthread_mutex_t sess_res_lock;
 
-extern pthread_mutex_t task_status_lock;
+extern pthread_mutex_t change_status_count_lock;
 extern pthread_mutex_t tstat_try_lock;
 extern pthread_mutex_t monitor_print_lock;
 

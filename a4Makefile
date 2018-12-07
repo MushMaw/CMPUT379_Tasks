@@ -1,7 +1,5 @@
-
-
 # CMPUT 379 - Assignment 4
-# File Name: a3Makefile
+# File Name: a4Makefile
 # Student Name: Jacob Bakker
 # CITATION: Makefile structure taken from https://stackoverflow.com/a/30602701
 
@@ -34,4 +32,4 @@ clean:
 	$(RM) $(OBJ) $(EXE)
 
 tar:
-	tar -cvf submit.tar include/ obj/ src/ a3Makefile a3Report.pdf
+	tar -cvf submit.tar include/ obj/ src/ a4Makefile a4Report.pdf

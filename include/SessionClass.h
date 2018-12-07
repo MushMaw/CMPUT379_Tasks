@@ -10,16 +10,24 @@
 #define SESSION_CLASS_H 1
 
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <cstring>
 #include <map>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
 
 #include "ResDictClass.h"
 #include "TaskClass.h"
 #include "TaskManagerClass.h"
 #include "TaskMonitorClass.h"
 #include "parselib.h"
+#include "TB_ExceptionClass.h"
 #include "a4constants.h"
 
 #define INPUT_FILE_DELIM_CHAR ' '
+#define MAX_LINE_LENGTH 1000
 #define INPUT_FILE_TASK_START std::string("task")
 #define INPUT_FILE_RESOURCE_START std::string("resources")
 
@@ -34,23 +42,25 @@
 class Sess_Exception : public TB_Exception {
 	public:
 		Sess_Exception(const char* msg, const std::string cur_func, const std::string func_traceback) :
-		TB_Exception(msg, cur_func, func_traceback);
+		TB_Exception(msg, cur_func, func_traceback) {}
 		Sess_Exception(const char* msg, const std::string cur_func) :
-		TB_Exception(msg, cur_func);
-}
+		TB_Exception(msg, cur_func) {}
+};
 
 class Session {
 	private:
+		int n_iter, mon_time;
 		SessResDict * res_dict;
 		TaskManager * task_mngr;
+		HR_Clock::time_point start_time;
 	
 		void parse_input_file(const std::string& file_name);
-		void parse_task_line(std::vector<std::string>& task_att_list)
-		void parse_resource_line(std::deque<std::string>& res_str_list)
+		void parse_task_line(const std::string& task_line);
+		void parse_resource_line(const std::string& res_line);
 	public:
-		Session(int argc, char *argv[]);
+		Session(int argc, char *argv[], HR_Clock::time_point start_time);
 		void run();
 		void print_results();
-}
+};
 
 #endif

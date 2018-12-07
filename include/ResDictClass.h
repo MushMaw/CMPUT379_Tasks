@@ -10,6 +10,10 @@
 #define RESOURCE_CLASS_H 1
 
 #include <string>
+#include <map>
+#include <vector>
+
+#include "TB_ExceptionClass.h"
 
 #define SER_RES_TOK_COUNT 2
 #define SER_RES_DELIM ':'
@@ -23,6 +27,9 @@
 // Function names
 #define ERR_RESDICT_DESER_ADD_FUNC std::string("ResDict::deserialize()")
 
+class SessResDict;
+class TaskResDict;
+
 typedef struct ResDictVal {
 	int avail_res;
 	int need_res;
@@ -32,10 +39,10 @@ typedef struct ResDictVal {
 class ResDict_Exception : public TB_Exception {
 	public:
 		ResDict_Exception(const char* msg, const std::string cur_func, const std::string func_traceback) :
-		TB_Exception(msg, cur_func, func_traceback);
+		TB_Exception(msg, cur_func, func_traceback) {}
 		ResDict_Exception(const char* msg, const std::string cur_func) :
-		TB_Exception(msg, cur_func);
-}
+		TB_Exception(msg, cur_func) {}
+};
 
 class ResDict {
 	private:
@@ -47,11 +54,12 @@ class ResDict {
 		virtual void set_res(const std::string& res_name, int value);
 
 		virtual void print();
-}
+};
 
 class SessResDict : public ResDict {
 	private:
-		std::mutex res_mutex;
+		//std::mutex res_mutex;
+		int temp;
 
 	public:
 		void deser_and_add(const std::string& ser_res) override;
@@ -61,7 +69,7 @@ class SessResDict : public ResDict {
 		void release_res(const TaskResDict* acquire_res);
 
 		void print() override;
-}
+};
 
 class TaskResDict : public ResDict {
 	private:
@@ -74,5 +82,6 @@ class TaskResDict : public ResDict {
 		void release_res();
 
 		void print() override;
-}
+};
+
 #endif

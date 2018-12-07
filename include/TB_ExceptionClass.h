@@ -6,26 +6,27 @@
  *
  */
 
-#if !defined(TB_EXCEPTION_H)
-#define TB_EXCEPTION_H
+#if !defined(TB_EXCEPTION_CLASS_H)
+#define TB_EXCEPTION_CLASS_H 1
 
 #include <exception>
+#include <string>
 
 #define TB_EXC_PRINT_START "Exception Occurred:\n"
 #define TB_EXC_TRACEBACK "	Traceback: "
 #define TB_EXC_ERROR_MSG "	Error: "
 #define TB_EXC_TRACEBACK_DELIM std::string(": ")
 
-class Traceback_Exception : public std::runtime_error {
+class TB_Exception : public std::runtime_error {
 	std::string traceback;
 
 	public:
-		Traceback_Exception(const char* msg, const std::string cur_func, const std::string func_traceback);
-		Traceback_Exception(const char* msg, const std::string cur_func);
+		TB_Exception(const char* msg, const std::string cur_func, const std::string func_traceback);
+		TB_Exception(const char* msg, const std::string cur_func);
 
 		void print_msg_traceback();
 		std::string get_traceback();
-}
+};
 		
 
 #endif

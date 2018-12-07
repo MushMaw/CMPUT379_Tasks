@@ -6,11 +6,20 @@
  *
  */
 
-#include <string>
-#include <vector>
+#if !defined(TASK_MONITOR_CLASS_H)
+#define TASK_MONITOR_CLASS_H 1
 
-#include "TaskMonitorClass.h"
+#include <string>
+#include <iostream>
+#include <vector>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+
 #include "TaskClass.h"
+#include "TaskManagerClass.h"
+
+#define TMONITOR_PRINT_START
  
 class TaskMonitor {
 	private:
@@ -21,7 +30,9 @@ class TaskMonitor {
 	public:
 		TaskMonitor(TaskManager * task_mgnr);
 	
-		void poll_task_status;
+		void poll_task_status();
 		void print();
 		void run();
-}
+};
+
+#endif

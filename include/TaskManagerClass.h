@@ -12,8 +12,12 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
 
 #include "TaskClass.h"
+#include "TB_ExceptionClass.h"
 
 #define TSK_MNGR_PRINT_IDX "[%d] "
 
@@ -26,10 +30,10 @@ typedef std::map<std::string, TaskStatus> TStat_Dict;
 class TaskMngr_Exception : public TB_Exception {
 	public:
 		TaskMngr_Exception(const char* msg, const std::string cur_func, const std::string func_traceback) :
-		TB_Exception(msg, cur_func, func_traceback);
+		TB_Exception(msg, cur_func, func_traceback) {}
 		TaskMngr_Exception(const char* msg, const std::string cur_func) :
-		TB_Exception(msg, cur_func);
-}
+		TB_Exception(msg, cur_func) {}
+};
 
 class TaskManager {
 	private:
@@ -46,4 +50,6 @@ class TaskManager {
 		void run_all();
 		void print_all();
 		bool all_tasks_done();
-}
+};
+
+#endif

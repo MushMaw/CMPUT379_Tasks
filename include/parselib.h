@@ -21,18 +21,19 @@
 #include <unistd.h>
 
 #include "a4constants.h"
+#include "TB_ExceptionClass.h"
 
 #define ERR_PARSELIB_STR_TO_INT_FUNC std::string("str_to_int()")
 
 #define ERR_PARSELIB_NON_INT_CHAR "Non-int char found\n"
 
 
-class Parse_Exception : public Traceback_Exception {
+class Parse_Exception : public TB_Exception {
 	public:
-		Parse_Exception(const char* msg, const std::string cur_func, const std::string func_traceback, int error_code) 
-		: Traceback_Exception(msg, cur_func, func_traceback, error_code) {}
-		Parse_Exception(const char* msg, const std::string cur_func, int error_code)
-		: Traceback_Exception(msg, cur_func, error_code) {}
+		Parse_Exception(const char* msg, const std::string cur_func, const std::string func_traceback) 
+		: TB_Exception(msg, cur_func, func_traceback) {}
+		Parse_Exception(const char* msg, const std::string cur_func)
+		: TB_Exception(msg, cur_func) {}
 };
 
 int str_to_int(const std::string& str);

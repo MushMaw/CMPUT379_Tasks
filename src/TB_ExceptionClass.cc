@@ -6,7 +6,7 @@
  *
  */
 
-#include "TB_Exception.h"
+#include "TB_ExceptionClass.h"
 
 
 TB_Exception::TB_Exception(const char* msg, const std::string cur_func, const std::string func_traceback) : std::runtime_error(msg) {

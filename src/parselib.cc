@@ -23,13 +23,13 @@
  *	- Parse_Exception
  * CITATION: This function is identical to the Assignment 3 function "str_to_int" in "parselib.cc"
  */
-int str_to_int(std::string const& str) {
+int str_to_int(const std::string& str) {
 	int output;
 	char *c_ptr;
 
 	output = strtol(str.c_str(), &c_ptr, 10);
 	// Throw exception if non-numeric character is found in "str"
-	if (*c_ptr) { throw Parse_Exception(ERR_PARSELIB_NON_INT_CHAR, ERR_PARSELIB_STR_TO_INT_FUNC, 0); }
+	if (*c_ptr) { throw Parse_Exception(ERR_PARSELIB_NON_INT_CHAR, ERR_PARSELIB_STR_TO_INT_FUNC); }
 	
 	return output;
 }

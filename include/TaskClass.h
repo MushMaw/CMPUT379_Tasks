@@ -10,11 +10,15 @@
 #define TASK_CLASS_H 1
 
 #include <chrono>
+#include <string>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
 
 #include "ResDictClass.h"
 #include "parselib.h"
 #include "a4constants.h"
-#include "TB_Exception.h"
+#include "TB_ExceptionClass.h"
 
 #define SER_TASK_DELIM ' '
 
@@ -28,32 +32,39 @@
 #define ERR_TASK_DESER_FUNC std::string("Task::deserialize()")
 
 
-enum TaskStatus {TS_WAIT, TS_IDLE, TS_BUSY}
-const std::string tstat_str_arr[] = { "WAIT", "IDLE", "BUSY" };
+enum TaskStatus {TS_WAIT, TS_IDLE, TS_RUN};
+
+class Task_Exception : public TB_Exception {
+	public:
+		Task_Exception(const char* msg, const std::string cur_func, const std::string func_traceback) :
+		TB_Exception(msg, cur_func, func_traceback) {}
+		Task_Exception(const char* msg, const std::string cur_func) :
+		TB_Exception(msg, cur_func) {}
+};
 
 class Task {
 	private:
 		std::string name;
 		int tid, n_iter, current_iter;
 		int wait_time, busy_time, idle_time;
+		HR_Clock::time_point start_time;
 
 		ResDict * req_res;
 		TaskStatus status;
-		Timer * timer;
 
 	public:
-		Task(std::string& ser_task);
+		Task(const std::string& ser_task);
 		std::string get_name() { return this->name; }
 		TaskStatus get_status() { return this->status; }
 
-		void deserialize(std::string& ser_task);
+		void deserialize(const std::string& ser_task);
 		void set_start_time(HR_Clock::time_point start_time);
 		int get_runtime();
 
-		static void start_task_thread(void *context)
+		static void start_task_thread(void *context);
 		void wait(int time);
 		void * run();
 		void print_finish_iter();
-}
+};
 
 #endif

@@ -19,7 +19,7 @@
  * Return Value: None
  * Throws: Task_Exception
  */
-Task::Task(std::string& ser_task) {
+Task::Task(const std::string& ser_task) {
 	try {
 		this->req_res = new ResDict();
 		this->timer = new Timer();
@@ -38,7 +38,7 @@ Task::Task(std::string& ser_task) {
  * Return Value: None
  * Throws: Task_Exception
  */
-void Task::deserialize(std::string& ser_task) {
+void Task::deserialize(const std::string& ser_task) {
 	std::deque<std::string> toks;
 	int tok_count = 0;
 

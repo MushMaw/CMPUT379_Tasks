@@ -19,14 +19,14 @@ Session::Session(int argc, char *argv[], HR_Clock::time_point start_time) {
 		arg_str = argv[1];
 		this->parse_input_file(arg_str);
 		arg_str = argv[2];
-		this-mon_time = str_to_int(arg_str);
+		this->mon_time = str_to_int(arg_str);
 		arg_str = argv[3];
 		this->n_iter = str_to_int(arg_str);
 		
 		this->res_dict = new SessResDict();
 		this->task_mngr = new TaskManager();
 
-	} catch (Parse_Exception& e) { throw Sess_Exception(e.what, ERR_SESS_CONSTR_FUNC, e.get_traceback()); }
+	} catch (Parse_Exception& e) { throw Sess_Exception(e.what(), ERR_SESS_CONSTR_FUNC, e.get_traceback()); }
 
 }
 
@@ -43,15 +43,17 @@ Session::Session(int argc, char *argv[], HR_Clock::time_point start_time) {
 void Session::parse_input_file(const std::string& file_name) {
 	std::ifstream input_file;
 	std::string line(""), first_tok("");
+	char line_buffer[MAX_LINE_LENGTH + 1];
 
 	try {
 		input_file.open(file_name.c_str());
 		if (input_file.fail()) { throw Sess_Exception(ERR_INPUT_FILE_OPEN_FAIL, ERR_SESS_PARSE_IFILE_FUNC); }
 
-		while (input_file.getline(line)) {
+		while (input_file.getline(line_buffer, MAX_LINE_LENGTH)) {
 			// If file is non-empty and not a comment
-			if (line[0] != '\n' && line[0] != '#') {
+			if (line_buffer[0] != '\n' && line_buffer[0] != '#') {
 				// Get first token from line to determine its type
+				line = line_buffer;
 				get_first_tok(line, INPUT_FILE_DELIM_CHAR, first_tok);
 				if (first_tok == INPUT_FILE_TASK_START) {
 					this->parse_resource_line(line);
@@ -59,6 +61,7 @@ void Session::parse_input_file(const std::string& file_name) {
 					this->parse_task_line(line);
 				}
 			}
+			std::memset(line_buffer, 0, sizeof(line_buffer));
 		}
 
 		input_file.close();
@@ -97,7 +100,7 @@ void Session::parse_resource_line(const std::string& res_line) {
  * Throws: None
  */
 void Session::parse_task_line(const std::string& task_line) {
-	Task new_task = NULL;
+	Task * new_task = NULL;
 	try {
 		new_task = new Task(task_line);
 		new_task->set_start_time(this->start_time);

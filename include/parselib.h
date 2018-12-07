@@ -1,10 +1,14 @@
 /**
- * CMPUT 379 - Assignment 3
+ * CMPUT 379 - Assignment 4
  * File Name: parselib.h
  * Student Name: Jacob Bakker
  *
- * Implements basic string parsing functions such as splitting a string into tokens and converting
- * strings to integers.
+ * Implements parsing functions for strings such as converting strings
+ * to integers, tokenizing a string, and extracting the first token from
+ * the string while removing the token from the original.
+ *
+ * Also implements a basic function for getting the duration between two
+ * points in time.
  */
 
 #if !defined(PARSELIB_H)

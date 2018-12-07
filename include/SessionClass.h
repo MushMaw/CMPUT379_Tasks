@@ -1,9 +1,13 @@
 /**
  * CMPUT 379 - Assignment 4
- * File Name: SessionClass.h
+ * File Name: SessionClass.cc
  * Student Name: Jacob Bakker
  *
- *
+ * The Session class acts as the main class of the "a4tasks" program. It handles
+ * the initialization of all system resources, Tasks, the Task Manager, and the 
+ * Task Monitor. Once the Manager and Monitor are prepared, they are both made to
+ * run and monitor the simulation respectively. Once done, the Session class displays
+ * the results and exits.
  */
 
 #if !defined(SESSION_CLASS_H)

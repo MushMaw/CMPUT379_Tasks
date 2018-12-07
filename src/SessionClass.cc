@@ -1,3 +1,15 @@
+/**
+ * CMPUT 379 - Assignment 4
+ * File Name: SessionClass.cc
+ * Student Name: Jacob Bakker
+ *
+ * The Session class acts as the main class of the "a4tasks" program. It handles
+ * the initialization of all system resources, Tasks, the Task Manager, and the 
+ * Task Monitor. Once the Manager and Monitor are prepared, they are both made to
+ * run and monitor the simulation respectively. Once done, the Session class displays
+ * the results and exits.
+ */
+
 #include "SessionClass.h"
 
 // Mutexes for thread creation and Session resources
@@ -14,7 +26,7 @@ int change_stat_count;
 /**
  * Function: Session Constructor
  * -----------------------
- * 
+ * Initializes the Session using command line arguments.
  *
  * Parameters: 
  *	- argc: Argument count
@@ -52,6 +64,9 @@ Session::Session(int argc, char *argv[]) {
 	} catch (Parse_Exception& e) { throw Sess_Exception(e.what(), ERR_SESS_CONSTR_FUNC, e.get_traceback()); }
 }
 
+/**
+ * Session destructor
+ */
 Session::~Session() {
 	delete this->res_dict;
 	delete this->task_mngr;
@@ -62,7 +77,8 @@ Session::~Session() {
 /**
  * Function: parse_input_file
  * -----------------------
- * 
+ * Reads the input file and initializes all resource values and Tasks
+ * specified in it.
  *
  * Parameters:
  *	- file_name: Name of input file
@@ -103,7 +119,8 @@ void Session::parse_input_file() {
 /**
  * Function: parse_resource_line
  * -----------------------
- * 
+ * Extracts all resource name-value pairs from the "res_line" string, then
+ * saves them to the Session's resource dictionary.
  *
  * Parameters: 
  *	- res_line: String of format "name1:value1 name2:value2 ..."
@@ -125,11 +142,13 @@ void Session::parse_resource_line(const std::string& res_line) {
 /**
  * Function: parse_task_line
  * -----------------------
- * 
+ * Creates a new Task using attributes taken from the "task_line" string,
+ * then saves the Task to the Session's Task Manager.
  *
- * Parameters: None
+ * Parameters: 
+ *	- task_line: String of format "task_name <busytime> <idletime> name1:value1..."
  * Return Value: None
- * Throws: None
+ * Throws: Sess_Exception
  */
 void Session::parse_task_line(const std::string& task_line) {
 	Task * new_task = NULL;
@@ -142,12 +161,32 @@ void Session::parse_task_line(const std::string& task_line) {
 	} catch (Task_Exception& e) { throw Sess_Exception(e.what(), ERR_SESS_PARSE_TASK_LINE_FUNC, e.get_traceback()); }
 }
 
+/**
+ * Function: start_monitor
+ * -----------------------
+ * This method creates a new thread and runs the Task Monitor on it.
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: None
+ */
 void Session::start_monitor() {
 	mutex_lock(&thread_create_lock);
 	pthread_create(&this->mon_tid, NULL, &TaskMonitor::start_monitor_thread, this->monitor);
 	mutex_unlock(&thread_create_lock);
 }
 
+/**
+ * Function: wait_for_monitor
+ * -----------------------
+ * This method blocks until the Task Monitor has exited its thread.
+ * This is intended to be called once the Task Manager has finished 
+ * running all Tasks.
+ *
+ * Parameters: None
+ * Return Value: None
+ * Throws: Sess_Exception
+ */
 void Session::wait_for_monitor() {
 	pthread_join(this->mon_tid, NULL);
 }
@@ -155,7 +194,9 @@ void Session::wait_for_monitor() {
 /**
  * Function: run
  * -----------------------
- * 
+ * This method initializes all resource and task instances from an input file,
+ * starts threads for both the Tasks and the Task Monitor, and - once the Tasks
+ * and Task Monitor have finished - prints the results of the simulation.
  *
  * Parameters: None
  * Return Value: None
@@ -174,13 +215,16 @@ void Session::run() {
 /**
  * Function: print
  * -----------------------
- * Prints the session resource values (number available and held)
+ * Prints the simulation results including the Session resource values,
+ * the Task attributes including resource values and waiting time, and
+ * the total runtime of the entire program.
  *
  * Parameters: None
  * Return Value: None
  * Throws: None
  */
 void Session::print_results() {
+	std::cout << "\n";
 	this->res_dict->print();
 	this->task_mngr->print_all();
 	fprintf(stdout, SESS_PRINT_RUNTIME, this->timer->get_duration());

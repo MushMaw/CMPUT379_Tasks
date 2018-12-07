@@ -1,9 +1,19 @@
 /**
  * CMPUT 379 - Assignment 4
- * File Name: TaskMonitorClass.h
+ * File Name: TaskMonitorClass.cc
  * Student Name: Jacob Bakker
  *
+ * Implements a monitor for running Tasks intended to be run concurrently
+ * on its own thread while Tasks execute. 
  *
+ * The Task Monitor periodically polls the running Tasks for their current status
+ * (idling, running, waiting) before printing their statuses to the terminal. Once
+ * all Tasks have finished running all of their iterations, the Monitor terminates.
+ *
+ * While polling and printing Task statuses, the Task Monitor locks all Tasks not currently
+ * changing status from doing so until the Monitor has successfully polled and printed their
+ * current statuses. During this time, Tasks will have their execution blocked until the Monitor
+ * is done.
  */
 
 #if !defined(TASK_MONITOR_CLASS_H)

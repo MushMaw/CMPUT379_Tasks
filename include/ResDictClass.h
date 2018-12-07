@@ -3,7 +3,20 @@
  * File Name: ResDictClass.h
  * Student Name: Jacob Bakker
  *
+ * Implements Resource Dictionary classes for both the Session and its running
+ * Tasks.
  *
+ * Both types of dictionary implement a function for adding resources from strings
+ * with the format "<res_name>:<value>". Both dictionaries also contain print methods
+ * to be used for outputting their resource values after Tasks have finished executing.
+ *
+ * The Session ResDict stores the maximum available values for each of its resources in
+ * addition to the number of currently available and held resource values. Given a dictionary
+ * of resource names and requested values from Tasks, the Session ResDict can give/retrieve
+ * resources to/from the Task ResDict.
+ *
+ * The Task ResDict stores the Tasks required and currently held Resources. It implements methods
+ * for acquiring/releasing resources through the Session ResDict it is set to.
  */
 
 #if !defined(RESOURCE_CLASS_H)

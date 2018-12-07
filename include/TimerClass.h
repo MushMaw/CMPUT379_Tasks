@@ -3,21 +3,17 @@
  * File Name: TimerClass.h
  * Student Name: Jacob Bakker
  *
- * Implements a basic millisecond Timer.
+ * Implements a basic millisecond Timer for tracking the duration between the Timer's
+ * start time and the current time.
  *
- * The Timer can be started with a target duration value given, allowing
- * for a program to query the Timer about whether the target duration has
- * been reached since having started it.
+ * CITATION: This class is adapted from the "TimerClass" used in Assignment 3.
  */
 
 #if !defined(TIMER_CLASS_H)
 #define TIMER_CLASS_H 1
 
 #include <chrono>
-
-typedef std::chrono::high_resolution_clock HR_Clock;
-typedef std::chrono::milliseconds millisec;
-typedef std::chrono::duration<double> raw_duration;
+#include "a4constants.h"
 
 class Timer {
 	private:

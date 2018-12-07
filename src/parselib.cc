@@ -3,7 +3,12 @@
  * File Name: parselib.cc
  * Student Name: Jacob Bakker
  *
- * 
+ * Implements parsing functions for strings such as converting strings
+ * to integers, tokenizing a string, and extracting the first token from
+ * the string while removing the token from the original.
+ *
+ * Also implements a basic function for getting the duration between two
+ * points in time.
  */
 
 
@@ -59,8 +64,10 @@ int n_tok_split(const std::string& str, char delim, std::deque<std::string>& tok
 	str_len = str.length();
 	for (int i = 0; i < str_len; i++) {
 		c = str[i];
+		// Save new token start on finding first non-delim char
 		if (c != delim && tok_start < 0) {
 			tok_start = i;
+		// If delim is found after a token, save that token to toks
 		} else if (c == delim && tok_start >= 0) {
 			tok_len = i - tok_start;
 			token = str.substr(tok_start, tok_len);
@@ -71,6 +78,7 @@ int n_tok_split(const std::string& str, char delim, std::deque<std::string>& tok
 		} 
 	}
 
+	// Save the token at the end of the string (if any)
 	if (tok_start >= 0) {
 		tok_len = str_len - tok_start;
 		token = str.substr(tok_start, tok_len);
@@ -83,13 +91,16 @@ int n_tok_split(const std::string& str, char delim, std::deque<std::string>& tok
 /**
  * Function: split_first_tok
  * -----------------------
- * 
+ * Given a string "str", this function sets "first_tok" to be the first
+ * string token in "str" obtained by splitting using a delimiter "delim".
+ * The string "str" then has "first_tok" along with any preceding "delim"
+ * characters removed.
  *
  * Parameters: 
  *	- str: The string to be split after its first token
  *	- delim: String delimiter to split "str" by
  *	- first_tok: The first token extracted from "str".
- * Return Value: None
+ * Return Value: The length of the first string token
  * Throws: None
  */
 int get_first_tok(std::string& str, char delim, std::string& first_tok) {
@@ -99,8 +110,10 @@ int get_first_tok(std::string& str, char delim, std::string& first_tok) {
 	str_len = str.length();
 	for (int i = 0; i < str_len; i++) {
 		c = str[i];
+		// Save new token start on finding first non-delim char
 		if (c != delim && tok_start < 0) {
 			tok_start = i;
+		// If delim is found after a token, save that token to toks
 		} else if (c == delim && tok_start >= 0) {
 			tok_len = i - tok_start;
 			first_tok = str.substr(tok_start, tok_len);

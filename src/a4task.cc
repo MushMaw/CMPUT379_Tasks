@@ -1,9 +1,10 @@
 /**
  * CMPUT 379 - Assignment 4
- * File Name: a4task.cc
+ * File Name: a4tasks.cc
  * Student Name: Jacob Bakker
  *
- *
+ * Implements a basic main function for "a4tasks" program that simply
+ * starts and runs a Session using command line input.
  */
 
 #include "a4tasks.h"

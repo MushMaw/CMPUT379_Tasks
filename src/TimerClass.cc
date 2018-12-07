@@ -3,31 +3,41 @@
  * File Name: TimerClass.cc
  * Student Name: Jacob Bakker
  *
- * Implements a basic millisecond Timer.
+ * Implements a basic millisecond Timer for tracking the duration between the Timer's
+ * start time and the current time.
  *
- * The Timer can be started with a target duration value given, allowing
- * for a program to query the Timer about whether the target duration has
- * been reached since having started it.
+ * CITATION: This class is adapted from the "TimerClass" used in Assignment 3.
  */
 
 #include "TimerClass.h"
 
 
 /**
- * Timer Constructor
+ * Timer Constructors
  */
 
 Timer::Timer(HR_Clock::time_point start_time) { this->set_start_time(start_time); }
 Timer::Timer() { this->start_time = HR_Clock::now(); }
 
 /**
+ * Getters and setters for start time.
+ */
+
+void Timer::set_start_time(HR_Clock::time_point tp) {
+	this->start_time = tp;
+}
+
+HR_Clock::time_point Timer::get_start_time() { return this->start_time; }
+
+
+/**
  * Function: get_duration
  * -----------------------
- * 
+ * Returns the number of milliseconds that have passed between the current time
+ * "curr_time" and the start time of the Timer instance.
  *
  * Parameters: 
- *	- start: Start time.
- *	- end: End time.
+ *	- curr_time: The current time.
  * Return Value: Duration in milliseconds.
  * Throws: None
  */
@@ -43,15 +53,17 @@ int Timer::get_duration(HR_Clock::time_point curr_time) {
 	return ms;
 }
 
+/**
+ * Function: get_duration
+ * -----------------------
+ * Returns the number of milliseconds that have passed between the current time
+ * and the start time of the Timer instance.
+ *
+ * Parameters: None
+ * Return Value: Duration in milliseconds.
+ * Throws: None
+ */
 int Timer::get_duration() {
 	HR_Clock::time_point curr_time = HR_Clock::now();
 	return this->get_duration(curr_time);
 }
-
-void Timer::set_start_time(HR_Clock::time_point tp) {
-	this->start_time = tp;
-}
-
-HR_Clock::time_point Timer::get_start_time() { return this->start_time; }
-
-

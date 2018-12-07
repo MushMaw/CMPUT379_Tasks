@@ -1,3 +1,12 @@
+/**
+ * CMPUT 379 - Assignment 4
+ * File Name: MutexDecl.h
+ * Student Name: Jacob Bakker
+ *
+ * Contains declarations for mutexes used by Session, Task, TaskManager,
+ * and TaskMonitor instances.
+ */
+
 #if !defined(MUTEX_DECL_H)
 #define MUTEX_DECL_H 1
 

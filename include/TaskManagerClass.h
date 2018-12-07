@@ -9,6 +9,10 @@
 #if !defined(TASK_MANAGER_CLASS_H)
 #define TASK_MANAGER_CLASS_H 1
 
+#if !defined(_GNU_SOURCE)
+#define _GNU_SOURCE
+#endif
+
 #include <map>
 #include <string>
 #include <iostream>

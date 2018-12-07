@@ -3,7 +3,12 @@
  * File Name: TB_Exception.h
  * Student Name: Jacob Bakker
  *
+ * Implements a Traceback Exception class to be inherited by the unique
+ * exception classes for each source file (where applicable).
  *
+ * Functions may append their names to the exception traceback as it is
+ * bubbled up through functions, allowing for a function traceback to be
+ * displayed with error messages.
  */
 
 #if !defined(TB_EXCEPTION_CLASS_H)

@@ -3,12 +3,28 @@
  * File Name: ResDictClass.cc
  * Student Name: Jacob Bakker
  *
+ * Implements Resource Dictionary classes for both the Session and its running
+ * Tasks.
  *
+ * Both types of dictionary implement a function for adding resources from strings
+ * with the format "<res_name>:<value>". Both dictionaries also contain print methods
+ * to be used for outputting their resource values after Tasks have finished executing.
+ *
+ * The Session ResDict stores the maximum available values for each of its resources in
+ * addition to the number of currently available and held resource values. Given a dictionary
+ * of resource names and requested values from Tasks, the Session ResDict can give/retrieve
+ * resources to/from the Task ResDict.
+ *
+ * The Task ResDict stores the Tasks required and currently held Resources. It implements methods
+ * for acquiring/releasing resources through the Session ResDict it is set to.
  */
 
 #include "ResDictClass.h"
 
 
+/**
+ * ResDict constructor and destructor
+ */
 ResDict::ResDict() {
 	this->rdict = new std::map<std::string, ResDictVal>;
 }
@@ -20,7 +36,8 @@ ResDict::~ResDict() {
 /**
  * Function: deserialize (ResDict)
  * -----------------------
- * 
+ * Given a string "ser_res" with the format "<res_name>:<value>", sets
+ * returns the resource value and sets "res_name" to its name.
  *
  * Parameters: 
  *	- ser_res: Resource string with format "name:value"
@@ -49,7 +66,9 @@ int ResDict::deserialize(const std::string& ser_res, std::string& res_name) {
 /**
  * Function: deser_and_add (SessResDict)
  * -----------------------
- * 
+ * Extracts and saves a resource name and value from the "ser_res" string.
+ * Initially, the number of available resources for this new resource is set
+ * to the number provided while the number of held resources is 0.
  *
  * Parameters: 
  *	- ser_res: Resource string with format "name:value"
@@ -75,7 +94,13 @@ void SessResDict::deser_and_add(const std::string& ser_res) {
 /**
  * Function: acquire_res (SessResDict)
  * -----------------------
- * 
+ * Given a dictionary of requested resource names and values, this method
+ * first checks whether the specified resources are available and - if they
+ * are - gives the requested resources and adjusts the values for available 
+ * resources accordingly. 
+ *
+ * If any one of the requested resouces are not available, the method does
+ * nothing and exits.
  *
  * Parameters: 
  *	- request_res: Dictionary of requested resource names and values
@@ -89,6 +114,7 @@ bool SessResDict::acquire_res(std::map<std::string, ResDictVal> * req_res) {
 	ResDictVal sess_rd_val, req_rd_val;
 		
 	if (this->if_res_avail(req_res) == false) { return false; }
+
 	for (it = (*req_res).begin(); it != (*req_res).end(); it++) {
 		rname = it->first;
 		req_rd_val = it->second;
@@ -109,11 +135,12 @@ bool SessResDict::acquire_res(std::map<std::string, ResDictVal> * req_res) {
 /**
  * Function: if_res_avail (SessResDict)
  * -----------------------
- * 
+ * Given a dictionary of requested resource names and values, this method
+ * determines whether all of the specified resources are available.
  *
  * Parameters: 
  *	- request_res: Dictionary of requested resource names and values
- * Return Value: True if available, false otherwise
+ * Return Value: True if all request resources are available, false otherwise
  * Throws: None
  */
 bool SessResDict::if_res_avail(std::map<std::string, ResDictVal> * req_res) {
@@ -138,7 +165,9 @@ bool SessResDict::if_res_avail(std::map<std::string, ResDictVal> * req_res) {
 /**
  * Function: release_res (SessResDict)
  * -----------------------
- * 
+ * Given a dictionary of held resources, this method retrieves the resources - 
+ * reducing the held resource values of the Task ResDict to 0 while readjusting
+ * the number of available and held resources for the Session ResDict accordingly.
  *
  * Parameters: Dictionary of acquired Resource names and values
  * Return Value: None
@@ -168,7 +197,7 @@ void SessResDict::release_res(std::map<std::string, ResDictVal> * acquire_res) {
 
 
 /**
- * Function:print
+ * Function: print
  * -----------------------
  * Prints each resource name, number of available units, and the amount
  * of that resource currently held by some set of Tasks.
@@ -195,6 +224,9 @@ void SessResDict::print() {
  * Task Resource Dictionary class methods
  */
 
+/**
+ * Task ResDict constructor
+ */
 TaskResDict::TaskResDict(SessResDict * sess_rdict) {
 	this->sess_res = sess_rdict;
 }
@@ -202,7 +234,8 @@ TaskResDict::TaskResDict(SessResDict * sess_rdict) {
 /**
  * Function: deser_and_add (TaskResDict)
  * -----------------------
- * 
+ * Extracts and saves a resource name and value from the "ser_res" string.
+ * The value represents the number of required resources of this type. 
  *
  * Parameters: 
  *	ser_res: Resource string with format "name:value"
@@ -227,10 +260,10 @@ void TaskResDict::deser_and_add(const std::string& ser_res) {
 /**
  * Function: acquire_res (TaskResDict)
  * -----------------------
- * 
+ * Attempts to retrieve all requested resources from the Session ResDict. 
  *
  * Parameters: None
- * Return Value: None
+ * Return Value: True if the required resources were obtained, false otherwise.
  * Throws: None
  */
 bool TaskResDict::acquire_res() {
@@ -241,7 +274,7 @@ bool TaskResDict::acquire_res() {
 /**
  * Function: release_res (TaskResDict)
  * -----------------------
- * 
+ * Releases all currently held resources back to the Session ResDict.
  *
  * Parameters: None
  * Return Value: None
@@ -255,7 +288,8 @@ void TaskResDict::release_res() {
 /**
  * Function: print (TaskResDict)
  * -----------------------
- * 
+ * Prints each resource name coupled with its number of required and currently
+ * held units.
  *
  * Parameters: None
  * Return Value: None

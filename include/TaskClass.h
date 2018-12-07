@@ -22,6 +22,7 @@
 #include "TB_ExceptionClass.h"
 #include "MutexDecl.h"
 #include "MutexLib.h"
+#include "TimerClass.h"
 
 #define SER_TASK_DELIM ' '
 
@@ -56,10 +57,10 @@ class Task {
 		int n_iter, current_iter;
 		pthread_t tid;
 		int wait_time, busy_time, idle_time;
-		//HR_Clock::time_point start_time;
 
 		TaskResDict * req_res;
 		TaskStatus status;
+		Timer * timer;
 
 	public:
 		Task(const std::string& ser_task, int n_iter, SessResDict * sess_rdict);
@@ -68,7 +69,7 @@ class Task {
 		TaskStatus get_status() { return this->status; }
 
 		void deserialize(const std::string& ser_task);
-		//void set_start_time(HR_Clock::time_point start_time);
+		void set_start_time(HR_Clock::time_point start_time);
 		int get_runtime();
 
 		void acquire_res();

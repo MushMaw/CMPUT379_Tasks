@@ -23,8 +23,10 @@ int change_stat_count;
  * Return Value: None
  * Throws: Sess_Exception
  */
-Session::Session(int argc, char *argv[]) { // HR_Clock::time_point start_time) {
+Session::Session(int argc, char *argv[]) {
 	std::string arg_str("");
+	HR_Clock::time_point start_time = HR_Clock::now();
+
 	try {
 		if (argc != ARG_COUNT) { throw Sess_Exception(ERR_SESS_INVALID_ARGC, ERR_SESS_CONSTR_FUNC); }
 
@@ -38,6 +40,7 @@ Session::Session(int argc, char *argv[]) { // HR_Clock::time_point start_time) {
 		this->res_dict = new SessResDict();
 		this->task_mngr = new TaskManager();
 		this->monitor = new TaskMonitor(this->task_mngr, this->mon_time);
+		this->timer = new Timer(start_time);
 
 		mutex_init(&thread_create_lock);
 		mutex_init(&sess_res_lock);
@@ -53,6 +56,7 @@ Session::~Session() {
 	delete this->res_dict;
 	delete this->task_mngr;
 	delete this->monitor;
+	delete this->timer;
 }
 
 /**
@@ -131,8 +135,7 @@ void Session::parse_task_line(const std::string& task_line) {
 	Task * new_task = NULL;
 	try {
 		new_task = new Task(task_line, this->n_iter, this->res_dict);
-		//new_task->set_start_time(this->start_time);
-		//std::cout << "set start time for task\n";
+		new_task->set_start_time(this->timer->get_start_time());
 		
 		this->task_mngr->add_task(new_task);
 
@@ -180,5 +183,6 @@ void Session::run() {
 void Session::print_results() {
 	this->res_dict->print();
 	this->task_mngr->print_all();
+	fprintf(stdout, SESS_PRINT_RUNTIME, this->timer->get_duration());
 }
 	

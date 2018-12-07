@@ -27,6 +27,7 @@
 #include "a4constants.h"
 #include "MutexDecl.h"
 #include "MutexLib.h"
+#include "TimerClass.h"
 
 #define ARG_COUNT 4
 
@@ -34,6 +35,8 @@
 #define MAX_LINE_LENGTH 100
 #define INPUT_FILE_TASK_START std::string("task")
 #define INPUT_FILE_RESOURCE_START std::string("resources")
+
+#define SESS_PRINT_RUNTIME "Running time= %d msec\n"
 
 #define ERR_INPUT_FILE_OPEN_FAIL "Unable to open input file\n"
 #define ERR_SESS_INVALID_ARGC "format: a4tasks inputFile monitorTime NITER\n"
@@ -60,7 +63,7 @@ class Session {
 		SessResDict * res_dict;
 		TaskManager * task_mngr;
 		TaskMonitor * monitor;
-		//HR_Clock::time_point start_time;
+		Timer * timer;
 	
 		void parse_input_file();
 		void parse_task_line(const std::string& task_line);
@@ -69,7 +72,7 @@ class Session {
 		void start_monitor();
 		void wait_for_monitor();
 	public:
-		Session(int argc, char *argv[]); // HR_Clock::time_point start_time);
+		Session(int argc, char *argv[]);
 		~Session();
 		void run();
 		void print_results();

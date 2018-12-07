@@ -25,11 +25,13 @@ Task::Task(const std::string& ser_task, int n_iter, SessResDict * sess_rdict) {
 		this->req_res = new TaskResDict(sess_rdict);
 		this->deserialize(ser_task);
 		this->status = TS_IDLE;
+		this->timer = new Timer();
 	} catch (Task_Exception& e) { throw Task_Exception(e.what(), ERR_TASK_CONSTR_FUNC, e.get_traceback()); }
 }
 
 Task::~Task() {
 	delete this->req_res;
+	delete this->timer;
 }
 
 /**
@@ -88,9 +90,9 @@ void * Task::run_task_thread(void *context) {
  * Return Value: None
  * Throws: None
  */
-//void Task::set_start_time(HR_Clock::time_point start_time) {
-//	this->start_time = start_time;
-//}
+void Task::set_start_time(HR_Clock::time_point start_time) {
+	this->timer->set_start_time(start_time);
+}
 
 /**
  * Function: wait
@@ -129,7 +131,8 @@ void Task::print_finish_iter() {
  * Throws: None
  */
 int Task::get_runtime() {
-	return 0;
+	HR_Clock::time_point curr_time = HR_Clock::now();
+	return this->timer->get_duration(curr_time);
 }
 
 void Task::acquire_res() {

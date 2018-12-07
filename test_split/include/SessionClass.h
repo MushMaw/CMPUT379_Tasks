@@ -18,15 +18,13 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#include "ResDictClass.h"
+#include "SessResDictClass.h"
 #include "TaskClass.h"
 #include "TaskManagerClass.h"
 #include "TaskMonitorClass.h"
 #include "parselib.h"
 #include "TB_ExceptionClass.h"
 #include "a4constants.h"
-#include "MutexDecl.h"
-#include "MutexLib.h"
 
 #define ARG_COUNT 4
 
@@ -64,7 +62,7 @@ class Session {
 		void parse_task_line(const std::string& task_line);
 		void parse_resource_line(const std::string& res_line);
 	public:
-		Session(int argc, char *argv[]); // HR_Clock::time_point start_time);
+		Session(int argc, char *argv[]);
 		~Session();
 		void run();
 		void print_results();

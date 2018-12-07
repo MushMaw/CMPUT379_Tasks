@@ -19,17 +19,16 @@
  * Return Value: None
  * Throws: Task_Exception
  */
-Task::Task(const std::string& ser_task, int n_iter, SessResDict * sess_rdict) {
+Task::Task(const std::string& ser_task, int n_iter) {
 	try {
 		this->n_iter = n_iter;
-		this->req_res = new TaskResDict(sess_rdict);
+		std::cout << "set n_iter\n";
+		this->req_res = new TaskResDict();
+		std::cout << "defined res dict\n";
 		this->deserialize(ser_task);
 	} catch (Task_Exception& e) { throw Task_Exception(e.what(), ERR_TASK_CONSTR_FUNC, e.get_traceback()); }
 }
 
-Task::~Task() {
-	delete this->req_res;
-}
 
 /**
  * Function: deserialize
@@ -45,6 +44,7 @@ void Task::deserialize(const std::string& ser_task) {
 	std::deque<std::string> toks;
 	int tok_count = 0;
 
+	std::cout << "in task deser\n";
 	try {
 		tok_count = n_tok_split(ser_task, SER_TASK_DELIM, toks);
 
@@ -52,12 +52,13 @@ void Task::deserialize(const std::string& ser_task) {
 		this->busy_time = str_to_int(toks[1]);
 		this->idle_time = str_to_int(toks[2]);
 		this->wait_time = 0;
-		this->current_iter = 0;
-		this->tid = -1;
 		
+		std::cout << "tok count: " << tok_count << "\n";
 		for (int i = 3; i < tok_count; i++) {
+			std::cout << "iter: " << i << "\n";
 			this->req_res->deser_and_add(toks[i]);
 		}
+		std::cout << "Out of for loop\n";
 	} catch (Parse_Exception& e) { throw Task_Exception(e.what(), ERR_TASK_DESER_FUNC, e.get_traceback()); }
 	  catch (ResDict_Exception& e) { throw Task_Exception(e.what(), ERR_TASK_DESER_FUNC, e.get_traceback()); }
 }
@@ -86,10 +87,10 @@ void * Task::run_task_thread(void *context) {
  *	- start_time: Starting time of program that created this Task object
  * Return Value: None
  * Throws: None
- */
-//void Task::set_start_time(HR_Clock::time_point start_time) {
-//	this->start_time = start_time;
-//}
+ 
+void Task::set_start_time(HR_Clock::time_point start_time) {
+	this->start_time = start_time;
+}*/
 
 /**
  * Function: wait
@@ -102,7 +103,7 @@ void * Task::run_task_thread(void *context) {
  * Throws: None
  */
 void Task::wait(int time) {
-	usleep(time * 1000);
+	usleep(time);
 }
 /**
  * Function: print_finish_iter
@@ -115,7 +116,7 @@ void Task::wait(int time) {
  */
 void Task::print_finish_iter() {
 	int runtime = this->get_runtime();
-	fprintf(stdout, TASK_FINISH_ITER_MSG, this->name.c_str(), int (this->tid), (this->current_iter+1), runtime);
+	fprintf(stdout, TASK_FINISH_ITER_MSG, this->name.c_str(), tid, (this->current_iter+1), runtime);
 }
 
 /**
@@ -138,12 +139,10 @@ void Task::acquire_res() {
 
 	wait_start = HR_Clock::now();
 	while (obtained_res == false) {
-		mutex_lock(&sess_res_lock);
 		obtained_res = this->req_res->acquire_res();
 		if (obtained_res == false) {
-			this->wait(10);
+
 		}
-		mutex_unlock(&sess_res_lock);
 	}
 	wait_end = HR_Clock::now();
 	wait_time = get_duration(wait_start, wait_end);
@@ -165,7 +164,7 @@ void Task::release_res() {
  */
 void Task::print() {
 	fprintf(stdout, TASK_PRINT_HEADER, this->name.c_str(), this->busy_time, this->idle_time);
-	fprintf(stdout, TASK_PRINT_TID, int (this->tid));
+	fprintf(stdout, TASK_PRINT_TID, this->tid);
 	this->req_res->print();
 	fprintf(stdout, TASK_PRINT_RUN_WAIT_COUNTS, this->current_iter, this->wait_time);
 	std::cout << "\n";
@@ -196,8 +195,6 @@ bool Task::is_done() {
  * Throws: 
  */
 void * Task::run() {
-	if (this == NULL) { std::cout << "NULL\n"; }
-	this->tid = pthread_self();
 	this->current_iter = 0;
 	while (this->current_iter < this->n_iter) {
 		this->acquire_res();

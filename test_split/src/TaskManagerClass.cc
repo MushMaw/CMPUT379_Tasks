@@ -12,15 +12,6 @@ TaskManager::TaskManager() {
 	this->tcount = 0;
 }
 
-TaskManager::~TaskManager() {
-	std::map<std::string, Task *>::iterator it;
-	Task * task = NULL;
-	for (it = this->task_dict.begin(); it != this->task_dict.end(); it++) {
-		task = it->second;
-		delete task;
-	}
-}
-
 /**
  * Function: add_task
  * -----------------------
@@ -33,12 +24,15 @@ TaskManager::~TaskManager() {
  */
 void TaskManager::add_task(Task * new_task) {
 	std::string tname("");
+	std::cout << "in add task\n";
 	this->tcount = 0;
 	if (this->tcount >= NTASKS) { throw TaskMngr_Exception(ERR_TASK_MNGR_LIMIT_REACHED, ERR_TASK_MNGR_CONSTR_FUNC); }
-
 	new_task->get_name(tname);
+	std::cout << "got tname\n";
 	this->task_dict[tname] = new_task;
+	std::cout << "pushed task to dict\n";
 	this->tname_list.push_back(tname);
+	std::cout << "saved tname to list\n";
 	this->tcount++;
 }
 
@@ -87,20 +81,17 @@ Task * TaskManager::get_task(const std::string& tname) {
  * Parameters: None
  * Return Value: None
  * Throws: None
- */
+ 
 void TaskManager::run_all() {
 	pthread_t pt_id;
-	std::map<std::string, Task *>::iterator it;
+	std::string tname("");
 	Task * next_task = NULL;
 	int tcount = this->tname_list.size();
 
 	// For each task, create a thread and run the task on it
-	for (it = this->task_dict.begin(); it != this->task_dict.end(); it++) {
-		mutex_lock(&thread_create_lock);
-		next_task = it->second;
+	for (int i = 0; i < tcount; i++) {
 		pthread_create(&pt_id, NULL, &Task::run_task_thread, next_task);
 		this->task_tid_list.push_back(pt_id);
-		mutex_unlock(&thread_create_lock);
 	}
 
 	// Wait until all task threads have terminated
@@ -109,7 +100,7 @@ void TaskManager::run_all() {
 		pthread_join(pt_id, NULL);
 	}
 }
-
+*/
 /**
  * Function: print_all
  * -----------------------
@@ -123,7 +114,7 @@ void TaskManager::print_all() {
 	int tcount = this->tname_list.size();
 	std::string tname("");
 	
-	std::cout << TSK_MNGR_PRINT_START;
+	std::cout << "tname count: " << tcount << "\n";
 	for (int i = 0; i < tcount; i++) {
 		tname = this->tname_list[i];
 		fprintf(stdout, TSK_MNGR_PRINT_IDX, i);

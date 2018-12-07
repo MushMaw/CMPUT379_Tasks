@@ -16,12 +16,10 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#include "ResDictClass.h"
+#include "TaskDictClass.h"
 #include "parselib.h"
 #include "a4constants.h"
 #include "TB_ExceptionClass.h"
-#include "MutexDecl.h"
-#include "MutexLib.h"
 
 #define SER_TASK_DELIM ' '
 
@@ -49,8 +47,7 @@ class Task_Exception : public TB_Exception {
 class Task {
 	private:
 		std::string name;
-		int n_iter, current_iter;
-		pthread_t tid;
+		int tid, n_iter, current_iter;
 		int wait_time, busy_time, idle_time;
 		//HR_Clock::time_point start_time;
 
@@ -58,9 +55,8 @@ class Task {
 		TaskStatus status;
 
 	public:
-		Task(const std::string& ser_task, int n_iter, SessResDict * sess_rdict);
-		~Task();
-		void get_name(std::string& name) { name = this->name; }
+		Task(const std::string& ser_task, int n_iter);
+		void get_name(std::string& name) { std::cout << "in getter\n"; name = this->name; }
 		TaskStatus get_status() { return this->status; }
 
 		void deserialize(const std::string& ser_task);

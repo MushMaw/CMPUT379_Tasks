@@ -19,10 +19,7 @@
 
 #include "TaskClass.h"
 #include "TB_ExceptionClass.h"
-#include "MutexDecl.h"
-#include "MutexLib.h"
 
-#define TSK_MNGR_PRINT_START "System Tasks:\n"
 #define TSK_MNGR_PRINT_IDX "[%d] "
 
 #define ERR_TASK_MNGR_LIMIT_REACHED "Cannot add Task: Maximum number of Tasks reached\n"
@@ -47,14 +44,13 @@ class TaskManager {
 		std::vector<pthread_t> task_tid_list;
 	public:
 		TaskManager();
-		~TaskManager();
 		int get_tcount() { return this->tcount; }
 		std::vector<std::string> get_tname_list() { return this->tname_list; }		
 
 		void add_task(Task * new_task);
 		void poll_task_status(TStat_Dict tstat_dict);
 		Task * get_task(const std::string& tname);
-		void run_all();
+		//void run_all();
 		void print_all();
 		bool all_tasks_done();
 };

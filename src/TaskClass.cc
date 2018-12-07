@@ -194,7 +194,6 @@ void Task::print() {
  * Throws: None
  */
 bool Task::is_done() {
-	if (this == NULL) { std::cout << "NULL TASK\n"; }
 	if (this->n_iter == this->current_iter) { return true; }
 	else { return false; }
 }
@@ -230,7 +229,6 @@ void Task::change_status(TaskStatus st) {
  * Throws: 
  */
 void * Task::run() {
-	if (this == NULL) { std::cout << "NULL\n"; }
 	this->tid = pthread_self();
 	this->current_iter = 0;
 	while (this->current_iter < this->n_iter) {

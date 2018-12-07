@@ -67,9 +67,7 @@ class ResDict {
 
 class SessResDict : public ResDict {
 	public:
-		//std::mutex res_mutex;
-		int temp;
-
+		virtual ~SessResDict() {}
 		void deser_and_add(const std::string& ser_res) override;
 
 		bool acquire_res(std::map<std::string, ResDictVal> * req_res);
@@ -84,6 +82,7 @@ class TaskResDict : public ResDict {
 		SessResDict * sess_res;
 
 		TaskResDict(SessResDict * sess_res);
+		virtual ~TaskResDict() {}
 		void deser_and_add(const std::string& ser_res) override;	
 
 		bool acquire_res();
